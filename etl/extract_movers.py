@@ -1,6 +1,9 @@
 # Take preprocessed data from two bounding boxes and retrieve users (and 
 # corresponding tweets) that changed bounding boxes
 #
+# At the moment all tweets are loaded into memory. Has to be rewritten for
+# larger amounts of data
+#
 # Author: Fridolin Linder
 
 from __future__ import unicode_literals
@@ -8,6 +11,7 @@ import io
 import os
 import sys
 import json
+from pprint import pprint
 
 
 def is_in(box, point):
@@ -16,8 +20,8 @@ def is_in(box, point):
     
     Arguments:
     ----------
-    box: touple, (top_latitude, left_longitude, bottom_latitide,
-        right_longitude)
+    box: tuple, (north_latitude, west_longitude, south_latitide,
+        east_longitude)
     point: tuple, (latitude, longitude)
 
     All coordinates are in decimal degrees.
@@ -74,24 +78,40 @@ def is_in_two(box_1, box_2, tweets):
 
 if __name__ == '__main__':
 
-    INPUT_FILE = 'filename here'
-    OUTPUT_FILE = 'filename here'
-    box_1 = 'insert coordinates here'
-    box_2 = 'insert coordinates here'
+    INPUT_FILE = '../data/germany_syria_extract.txt'
+    OUTPUT_FILE = '../data/germany_syria_movers.txt'
+
+
+    # Germany NE 55.05814, 15.04205 SW 47.27021, 5.86624, 
+    # Syria NE 37.319, 42.384998 SW 32.3106, 35.727001
+
+    # box: touple, (top_latitude, left_longitude, bottom_latitide,
+    # right_longitude)
+
+    germany = (55.05814, 5.86624, 47.27021, 15.04205)
+    syria = (37.319, 35.727001, 32.3106, 42.384998)
 
     # First step: Generate a list of tweets for each user
     tweets_by_user = {}
     with io.open(INPUT_FILE, 'r', encoding='utf-8') as infile:
 
-        for line in infile:
+        for i,line in enumerate(infile):
+            try:
+                tweet = json.loads(line)
+            except ValueError: 
+                print "json error in line: {}".format(i)
+                print line
+                continue
 
-            tweet = json.loads(line)
-            
             if tweet['user_id'] not in tweets_by_user.keys():
                 tweets_by_user[tweet['user_id']] = [tweet]
             else:
                 tweets_by_user[tweet['user_id']].append(tweet)
+            if i % 10000 == 0:
+                print i
 
+    # Print out some descriptives
+    print "Number of unique users: {}".format(len(tweets_by_user.keys()))
 
     # Second step: Get all users that have tweets in both bounding boxes
     selected_users = set()
@@ -104,6 +124,7 @@ if __name__ == '__main__':
         else:
             continue
 
+    print "Number of movers: {}".format(len(selected_users))
 
     # Third step write the tweets of the selected users to file
     outfile = io.open(OUTPUT_FILE, 'w+', encoding='utf-8')
