@@ -34,7 +34,7 @@ def is_in(box, point):
     if point[0] < box[0] and \
        point[0] > box[2] and \
        point[1] > box[1] and \
-       point[1] > box[3]:
+       point[1] < box[3]:    
         return True
     else:
         return False
@@ -60,6 +60,7 @@ def is_in_two(box_1, box_2, tweets):
 
     # Loop through all of the user's tweets
     for doc in tweets:
+
         # Extract coordinates from tweet
         point = tuple(doc['coordinates']) 
 
@@ -72,8 +73,8 @@ def is_in_two(box_1, box_2, tweets):
         # Check if there is at least one tweet in both boxes
         if all(in_boxes):
             return True 
-
-    return False
+        else:
+            return False
 
 
 if __name__ == '__main__':
@@ -82,11 +83,8 @@ if __name__ == '__main__':
     OUTPUT_FILE = '../data/germany_syria_movers.txt'
 
 
-    # Germany NE 55.05814, 15.04205 SW 47.27021, 5.86624, 
-    # Syria NE 37.319, 42.384998 SW 32.3106, 35.727001
-
-    # box: touple, (top_latitude, left_longitude, bottom_latitide,
-    # right_longitude)
+    # Germany: NE 55.05814, 15.04205 SW 47.27021, 5.86624, 
+    # Syria: NE 37.319, 42.384998 SW 32.3106, 35.727001
 
     germany = (55.05814, 5.86624, 47.27021, 15.04205)
     syria = (37.319, 35.727001, 32.3106, 42.384998)
@@ -99,16 +97,18 @@ if __name__ == '__main__':
             try:
                 tweet = json.loads(line)
             except ValueError: 
-                print "json error in line: {}".format(i)
+                print "json ValueError error in line: {}".format(i)
                 print line
                 continue
 
-            if tweet['user_id'] not in tweets_by_user.keys():
+            if tweet['user_id'] not in tweets_by_user:
                 tweets_by_user[tweet['user_id']] = [tweet]
             else:
                 tweets_by_user[tweet['user_id']].append(tweet)
             if i % 10000 == 0:
                 print i
+            #if i == 100000:
+            #    break
 
     # Print out some descriptives
     print "Number of unique users: {}".format(len(tweets_by_user.keys()))
@@ -117,9 +117,9 @@ if __name__ == '__main__':
     selected_users = set()
 
     # Loop through all users in the dict genreated in last step
-    for user in tweets_by_user:
-        
-        if is_in_two(box_1, box_2, tweets_by_user[user]):
+    for i, user in enumerate(tweets_by_user):
+         
+        if is_in_two(germany, syria, tweets_by_user[user]):
             selected_users.update(user)
         else:
             continue
@@ -136,10 +136,6 @@ if __name__ == '__main__':
                 outfile.write('\n')
         else:
             continue
-            
+
+           
     outfile.close()
-
-
-
-        
-
