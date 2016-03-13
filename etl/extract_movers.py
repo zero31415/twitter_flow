@@ -73,15 +73,14 @@ def is_in_two(box_1, box_2, tweets):
         # Check if there is at least one tweet in both boxes
         if all(in_boxes):
             return True 
-        else:
-            return False
+
+    return False
 
 
 if __name__ == '__main__':
 
     INPUT_FILE = '../data/germany_syria_extract.txt'
     OUTPUT_FILE = '../data/germany_syria_movers.txt'
-
 
     # Germany: NE 55.05814, 15.04205 SW 47.27021, 5.86624, 
     # Syria: NE 37.319, 42.384998 SW 32.3106, 35.727001
@@ -105,7 +104,7 @@ if __name__ == '__main__':
                 tweets_by_user[tweet['user_id']] = [tweet]
             else:
                 tweets_by_user[tweet['user_id']].append(tweet)
-            if i % 10000 == 0:
+            if i % 100000 == 0:
                 print i
             #if i == 100000:
             #    break
@@ -120,22 +119,28 @@ if __name__ == '__main__':
     for i, user in enumerate(tweets_by_user):
          
         if is_in_two(germany, syria, tweets_by_user[user]):
-            selected_users.update(user)
+            selected_users.add(user)
         else:
             continue
 
     print "Number of movers: {}".format(len(selected_users))
+    #print "Number of tweets by mover:"
+    #print "*************************"
+    #for user in tweets_by_user:
+    #    if user in selected_users:
+    #        print "User {}: {} tweets".format(tweets_by_user[user][0]['user_id'],
+    #                                          len(tweets_by_user[user]))
 
     # Third step write the tweets of the selected users to file
-    outfile = io.open(OUTPUT_FILE, 'w+', encoding='utf-8')
+    outfile = io.open(OUTPUT_FILE, 'a', encoding='utf-8')
+
     for user in tweets_by_user:
 
         if user in selected_users:
             for tweet in tweets_by_user[user]:
-                outfile.write(json.dumps(tweet))
+                outfile.write(unicode(json.dumps(tweet)))
                 outfile.write('\n')
         else:
             continue
 
-           
     outfile.close()
