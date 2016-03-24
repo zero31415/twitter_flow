@@ -12,6 +12,8 @@ import os
 import sys
 import json
 from pprint import pprint
+import glob
+import time
 
 
 def is_in(box, point):
@@ -22,7 +24,7 @@ def is_in(box, point):
     ----------
     box: tuple, (north_latitude, west_longitude, south_latitide,
         east_longitude)
-    point: tuple, (latitude, longitude)
+    point: tuple, (longitude, latitude)
 
     All coordinates are in decimal degrees.
 
@@ -31,116 +33,96 @@ def is_in(box, point):
     bool, true if in the box, false if not
     '''
 
-    if point[0] < box[0] and \
-       point[0] > box[2] and \
-       point[1] > box[1] and \
-       point[1] < box[3]:    
+    if point[1] < box[0] and \
+       point[1] > box[2] and \
+       point[0] > box[1] and \
+       point[0] < box[3]:    
         return True
     else:
         return False
 
+def update_bb(coord, user_dict):
 
-def is_in_two(box_1, box_2, tweets):
-    '''
-    Determine if the given user has geolocated tweets in both bounding boxes.
+    if is_in(germany, coord):
+        user_dict['germany'] = True
+    elif is_in(syria, coord):
+        user_dict['syria'] = True
 
-    Arguments:
-    ----------
-    box_1: tuple, the first bounding box see format in is_in()
-    box_2: tuple, the second bounding box see format in is_in()
-    tweets: list, of the tweets of a single user. Each tweet is in json format
-        and has to have a "coordinate": [lat, lon].
-
-    Returns:
-    ----------
-    bool, true if the user has tweets in both boxes, false otherwise
-    '''
-    
-    in_boxes = [False, False]
-
-    # Loop through all of the user's tweets
-    for doc in tweets:
-
-        # Extract coordinates from tweet
-        point = tuple(doc['coordinates']) 
-
-        # Check if in either of the boxes
-        if is_in(box_1, point):
-            in_boxes[0] = True
-        if is_in(box_2, point):
-            in_boxes[1] = True
-
-        # Check if there is at least one tweet in both boxes
-        if all(in_boxes):
-            return True 
-
-    return False
-
+    return user_dict
+                     
 
 if __name__ == '__main__':
 
-    INPUT_FILE = '../data/germany_syria_extract.txt'
+
+    INPUT_FILES = glob.glob("/Volumes/My Passport/GEOG597/04/*")
+
     OUTPUT_FILE = '../data/germany_syria_movers.txt'
+    LOG_FILE = 'data_reduction.log'
 
     # Germany: NE 55.05814, 15.04205 SW 47.27021, 5.86624, 
     # Syria: NE 37.319, 42.384998 SW 32.3106, 35.727001
-
     germany = (55.05814, 5.86624, 47.27021, 15.04205)
     syria = (37.319, 35.727001, 32.3106, 42.384998)
 
     # First step: Generate a list of tweets for each user
-    tweets_by_user = {}
-    with io.open(INPUT_FILE, 'r', encoding='utf-8') as infile:
-
-        for i,line in enumerate(infile):
-            try:
-                tweet = json.loads(line)
-            except ValueError: 
-                print "json ValueError error in line: {}".format(i)
-                print line
-                continue
-
-            if tweet['user_id'] not in tweets_by_user:
-                tweets_by_user[tweet['user_id']] = [tweet]
-            else:
-                tweets_by_user[tweet['user_id']].append(tweet)
-            if i % 100000 == 0:
-                print i
-            #if i == 100000:
-            #    break
-
-    # Print out some descriptives
-    print "Number of unique users: {}".format(len(tweets_by_user.keys()))
-
-    # Second step: Get all users that have tweets in both bounding boxes
+    users = {}
+    skipped = 0
+    no_coordinates = 0
     selected_users = set()
 
-    # Loop through all users in the dict genreated in last step
-    for i, user in enumerate(tweets_by_user):
-         
-        if is_in_two(germany, syria, tweets_by_user[user]):
-            selected_users.add(user)
-        else:
-            continue
+    start = time.time()
+    for f in INPUT_FILES:
 
-    print "Number of movers: {}".format(len(selected_users))
-    #print "Number of tweets by mover:"
-    #print "*************************"
-    #for user in tweets_by_user:
-    #    if user in selected_users:
-    #        print "User {}: {} tweets".format(tweets_by_user[user][0]['user_id'],
-    #                                          len(tweets_by_user[user]))
+        with io.open(f, 'r', encoding='utf-8') as infile , io.open(LOG_FILE, 'a') as logfile:
 
-    # Third step write the tweets of the selected users to file
-    outfile = io.open(OUTPUT_FILE, 'a', encoding='utf-8')
+            for i,line in enumerate(infile):
 
-    for user in tweets_by_user:
+                if not line.startswith('{'):
+                    skipped += 1
+                    continue
 
-        if user in selected_users:
-            for tweet in tweets_by_user[user]:
-                outfile.write(unicode(json.dumps(tweet)))
-                outfile.write('\n')
-        else:
-            continue
+                try:
+                    tweet = json.loads(line)
+                except ValueError: 
+                    #logfile.write("Line {line_number}: json ValueError error\n".format(line_number=i))
+                    continue
+                 
+                if tweet['coordinates'] is None:
+                    no_coordinates += 1
+                    continue
+                
+                
+                # Extrac information
+                id_ = tweet['user']['id_str']
 
-    outfile.close()
+                if id_ in selected_users:
+                    continue
+
+                coord = tuple(tweet['coordinates']['coordinates'])
+                 
+                if id_ not in users:
+                    users[id_] = update_bb(coord, {'germany': False, 'syria': False})
+                          
+                else:
+                    users[id_] = update_bb(coord, users[id_])
+                
+                if users[id_]['germany'] and users[id_]['syria']:
+                    selected_users.update(id_)
+                    
+                if i % 100000 == 0:
+                    print i
+                    print "skipped {}".format(skipped)
+                    print "no coordinates {}".format(no_coordinates)
+                    print "Found {} movers".format(len(list(selected_users)))
+
+            print "Took {} seconds".format(time.time() - start)
+            start = time.time()
+
+ 
+
+    with io.open(OUTPUT_FILE,'w') as outfile:
+
+        for user in list(selected_users):
+
+            outfile.write(user)
+            outfile.write('\n')
