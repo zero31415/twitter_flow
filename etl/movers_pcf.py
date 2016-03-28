@@ -190,7 +190,7 @@ class Consumer(object):
             
             # Keep track of the files we are done with in case it crashes
             st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-            fname = ntpath.basename(f)
+            fname = ntpath.basename(filename)
             log_entry = '[{}]: Finsihed {}. {} lines in {} seconds.\n'.format(st, fname, i, t)
             logfile.write(log_entry)
             start = time.time()
