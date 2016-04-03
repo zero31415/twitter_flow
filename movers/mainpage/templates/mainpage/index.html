@@ -1,0 +1,148 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Movers</title>
+
+        <!-- read data -->
+        <script>
+			var raw_data = "{% static 'mainpage/csv/data.csv' %}";
+			var data1 = "{% static 'mainpage/csv/data1.csv' %}";
+		</script>
+
+        <!-- Styles -->
+        <link href="{% static 'mainpage/css/leaflet.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'mainpage/css/jquery.slider.ithing.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'mainpage/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'mainpage/css/main.css' %}" rel="stylesheet" type="text/css" />
+
+        <!-- jQuery -->
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js" type="text/javascript"></script>
+        <script src="{% static 'mainpage/js/jquery.slider.min.js' %}"></script>
+
+        <!-- D3.js -->
+        <script src="http://d3js.org/queue.v1.min.js" type="text/javascript"></script>
+        <script src="http://d3js.org/topojson.v1.min.js" type="text/javascript"></script>
+        <script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
+
+        <!-- Other libraries -->
+        <script src="{% static 'mainpage/js/knockout.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'mainpage/js/crossfilter.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'mainpage/js/leaflet.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'mainpage/js/moment.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'mainpage/js/moment.timezone.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'mainpage/js/bootstrap.min.js' %}" type="text/javascript"></script>
+
+        <!-- Main code -->
+        <script src="{% static 'mainpage/js/main.js' %}" type="text/javascript" charset="utf-8"></script>
+
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="http://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+    <body>
+
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="container">
+			    <div class="navbar-header">
+			      	<a class="navbar-brand" href="#">Movers</a>
+			    </div>
+
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+					<li><a href="#">Link</a></li>
+				</ul>
+
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">[username]<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="#">Action</a></li>
+							<li><a href="#">Another action</a></li>
+							<li><a href="#">Something else here</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+	    <div class="container" id="container-real">
+			<div id="map"></div>
+			<div id="barchart"></div>
+			<div id="tweet-container">
+				<div class="panel panel-default" style="height:100%; padding:0;">
+				  	<div class="panel-heading">Tweets from @username</div>
+				  	<div class="panel-body" style="padding: 0;overflow: scroll;height: calc(100% - 40px);">
+				  <!-- List group -->
+						<ul class="list-group" style="margin:0;">
+						<li class="list-group-item">Cras justo odio</li>
+						<li class="list-group-item">Dapibus ac facilisis in</li>
+						<li class="list-group-item">Morbi leo risus</li>
+						<li class="list-group-item">Porta ac consectetur ac</li>
+						<li class="list-group-item">Vestibulum at eros</li>
+						<li class="list-group-item">Cras justo odio</li>
+						<li class="list-group-item">Dapibus ac facilisis in</li>
+						<li class="list-group-item">Morbi leo risus</li>
+						<li class="list-group-item">Porta ac consectetur ac</li>
+						<li class="list-group-item">Vestibulum at eros</li>
+						</ul>  	
+				  	</div>
+				</div>
+			</div>
+			<div id="filter-container">
+				<div class="panel panel-default" style="height:100%; padding:0;">
+				  	<div class="panel-heading">Filters</div>
+				  	<div class="panel-body" style="padding: 0;overflow: scroll;height: calc(100% - 40px);">
+				  <!-- List group -->
+						<ul class="list-group" style="height:100%;">
+						<li class="list-group-item">
+							Language
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">English<span class="caret"></span></button>
+								<ul class="dropdown-menu">
+								<li class="item active"><a href="#">English</a></li>
+								<li><a href="#">German</a></li>
+								<li><a href="#">Other</a></li>
+								</ul>
+							</div><!-- /btn-group -->
+						</li>
+						<li class="list-group-item">
+							# Countries
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Country 1<span class="caret"></span></button>
+								<ul class="dropdown-menu">
+								<li class="item active"><a href="#">Country 1</a></li>
+								<li><a href="#">Country 2</a></li>
+								<li><a href="#">Other</a></li>
+								</ul>
+							</div><!-- /btn-group -->
+						</li>
+						<li class="list-group-item">Morbi leo risus</li>
+						<li class="list-group-item">Porta ac consectetur ac</li>
+						<li class="list-group-item">Vestibulum at eros</li>
+						<li class="list-group-item">Cras justo odio</li>
+						</ul>  	
+				  	</div>
+				</div>
+			</div>
+	    </div>
+		<div id="message-box" class="well">
+			<span id="timerange-lower-value"></span>
+			to
+			<span id="timerange-upper-value"></span>
+			:
+			<span id="countUsers"></span> movers
+		</div>
+    </body>
+</html>
