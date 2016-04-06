@@ -60,13 +60,26 @@ class Producer(object):
 
     def __init__(self, input_dir, buffer_size=5):
         self.queue = glob.glob(input_dir)
+        if os.path.isfile('consumer_progress.log'):
+
+            with io.open('consumer_progress.log') as infile:
+                processed = [e.strip('\n') for e in infile.readlines()]
+                self.queue = [e for e in self.queue if not self._is_in_processed(e, processed)]           
         self.buffer_size = buffer_size
         self.active = True
         self.buffer = []
         rarfile.UNRAR_TOOL = "C:/Users/flinder/Downloads/unrar.exe"
         print "Producer: Initialized producer with {} files in queue".format(len(self.queue))
+    
+    def _is_in_processed(self, queue_element, processed):
+        s = re.sub('\.rar', '.out', ntpath.basename(queue_element))
+        if s in processed:
+            return True
+        else:
+            return False
  
     def _update_status(self):
+        global buffer
         n_ready = len(buffer)
         if n_ready >= self.buffer_size:
             self.active = False
@@ -89,7 +102,7 @@ class Producer(object):
         global buffer
         global producer_done        
         while len(self.queue) > 0:
-
+             
             if self.active:
                 # Continue decompressing
                 current_file = self.queue.pop()
@@ -104,6 +117,7 @@ class Producer(object):
 
             else:
                 # Stay inactive until consumer has consumed file
+                print "Producer: Waiting for Consumer..."
                 while True:
                     time.sleep(10)
                     self._update_status()
@@ -118,15 +132,25 @@ class Producer(object):
 
 class Consumer(object):
 
-    def __init__(self, producer, logfilename="consumer.log"):
-        self.queue = glob.glob('*.out')
-        self.processed = []
+    def __init__(self, producer):
         self.producer_done = False
-        self.users = {}
-        self.selected_users = set()
         self.producer = producer
-        self.logfilename="consumer.log"
-
+        self.logfilename='consumer.log'
+        self.progress_file='consumer_progress.log'
+        if os.path.isfile(self.progress_file):
+            with io.open(self.progress_file) as progressfile:
+                self.processed = [e.strip('\n') for e in progressfile.readlines()]
+        else:
+            self.processed = []
+        self.user_file='user_dict_backup.json'
+        if os.path.isfile(self.user_file):
+            with io.open(self.user_file) as userfile:
+                self.users = json.loads(userfile.read())
+                self.users['selected_users'] = set(self.users['selected_users'])
+        else:
+            self.users = {}
+            self.users['selected_users'] = set()
+            
     def _process_file(self, filename):
         
         # Set bounding boxes
@@ -136,7 +160,7 @@ class Consumer(object):
         syria = (37.319, 35.727001, 32.3106, 42.384998)
 
         start = time.time()
-
+        print "Consumer: Processing {}".format(filename)
         with io.open(filename, 'r', encoding='utf-8') as infile, \
                 io.open(file=self.logfilename, mode='a') as logfile:
 
@@ -161,7 +185,7 @@ class Consumer(object):
                 id_ = tweet['user']['id_str']
 
                 # Skip if we already know we want this user
-                if id_ in self.selected_users:
+                if id_ in self.users['selected_users']:
                     continue
 
                 # Extract coordinates
@@ -181,7 +205,7 @@ class Consumer(object):
                 
                 # If user has tweets in both bounding boxes append to selected users
                 if self.users[id_]['selected']:
-                    self.selected_users.update([id_])
+                    self.users['selected_users'].update([id_])
                 
                 # Status update
             
@@ -190,21 +214,29 @@ class Consumer(object):
             
             # Keep track of the files we are done with in case it crashes
             st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-            fname = ntpath.basename(f)
+            fname = ntpath.basename(filename)
             log_entry = '[{}]: Finsihed {}. {} lines in {} seconds.\n'.format(st, fname, i, t)
             logfile.write(log_entry)
             start = time.time()
 
             #Make a backup of the users dictionary
-            with io.open('user_dict_backup.json', 'w+') as backupfile:
-                backupfile.write(unicode(json.dumps(users)))
+            with io.open(self.user_file, 'w+') as backupfile:
+
+                # Transform to list to make json serializable
+                self.users['selected_users'] = list(self.users['selected_users'])
+                backupfile.write(unicode(json.dumps(self.users)))
+                self.users['selected_users'] = set(self.users['selected_users'])
             
             # Weird but apparently necessary
             infile.close()
             
             # Remove the temporary decompressed file
+            with io.open(self.progress_file, 'a+') as progressfile:
+                   progressfile.write(filename)
+                   progressfile.write('\n')
             self.processed.append(filename)
             os.remove(filename)
+            
 
     def _update_status(self): 
         global buffer
@@ -214,24 +246,24 @@ class Consumer(object):
 
     def run(self):
         global consumer_done
+        global buffer
         while True:
             
-            # Check for files in directory
-            self._update_status()
-            
-            if len(self.queue) == 0:
+            if len(buffer) == 0:
                 # Stop the program if producer is done and queue is empty
                 if producer_done:
                     consumer_done = True
                     return None
                 # If queue is empty and producer not done wait and check again
                 else:
-                    time.sleep(10)
-                    pass
+                    print "Consumer: Waiting for Producer..."
+                    while(len(buffer) == 0):
+                        time.sleep(1)
+                    
             else:
                 # Process all new files
-                while len(self.queue) > 0:
-                    current_file = self.queue.pop()
+                while len(buffer) > 0:
+                    current_file = buffer.pop()
                     self._process_file(current_file)
                     print "Consumer: Processed {}".format(current_file)
 
@@ -240,21 +272,33 @@ class Consumer(object):
 if __name__ == '__main__':
 
     # Initialize producer and consumer
-    producer = Producer('D:/fridolin_linder/twitter_flow_data/*.rar')
-    consumer = Consumer(producer)
-    buffer = []
-    producer_done = False
-    consumer_done = False
+    #producer = Producer('D:/fridolin_linder/twitter_flow_data/*.rar')
+    #consumer = Consumer(producer)
+    #buffer = []
+    #producer_done = False
+    #consumer_done = False
 
-    producer_thread = Thread(target=producer.run)
-    producer_thread.daemon = True
-    producer_thread.start()
+    #producer_thread = Thread(target=producer.run)
+    #producer_thread.daemon = True
+    #producer_thread.start()
     
-    consumer_thread = Thread(target=consumer.run)
-    consumer_thread.daemon = True
-    consumer_thread.start()
-
+    #consumer_thread = Thread(target=consumer.run)
+    #consumer_thread.daemon = True
+    #consumer_thread.start()
+    
+    
+    producer_done = True
+    consumer_done = True
     while True:
         time.sleep(1)
         if producer_done and consumer_done:
+            # Write the selected users to file
+            with io.open('user_dict_backup.json') as infile, io.open('selected_users.txt', 'w', encoding='utf-8') as outfile:
+                users = json.loads(infile.read())
+                l = users['selected_users']
+                print len(l)
+                for i,u in enumerate(l):
+                    if i % 100 == 0: print i
+                    outfile.write(u)
+                    outfile.write('\n')
             break
