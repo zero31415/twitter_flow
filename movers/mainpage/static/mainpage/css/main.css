@@ -1,0 +1,90 @@
+/*
+ * Custom
+ */
+
+html,
+body {
+  height: 100%;
+  background-color: white;
+}
+
+html, body, .container, #map {
+  height: 100%;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+
+.navbar-brand {
+    margin-left: 1em !important;
+}
+
+#container-real {
+  position: fixed;
+  top: 50px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#map {
+  z-index: 0;
+  position: absolute;
+  bottom: 200px;
+  right: 300px;
+  height: calc(100% - 200px);
+  width: calc(100% - 300px);
+}
+
+#message-box {
+  position: fixed;
+  bottom: 150px;
+  left: 20px;
+}
+
+#barchart {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 200px;
+  width: calc(100% - 300px);
+}
+
+  .axis {
+    font: 10px sans-serif;
+  }
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+  .brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+  }
+
+#timerange-lower-value, #timerange-upper-value {
+  color: orange;
+}
+
+#filter-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 300px;
+  width: 300px; 
+}
+  .input-group-btn{
+    display: inline;
+  }
+
+#tweet-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: calc(100% - 300px);
+}
+
