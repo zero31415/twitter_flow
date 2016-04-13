@@ -24,11 +24,31 @@ html, body, .container, #map {
 }
 
 #map-container {
-  height: 500px;
+  height: 100px;
   background: red;
 }
 
 #time-container {
-  height: 500px;
-  background: green;
+  height: 600px;
+}
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+path:hover { 
+    stroke: red;
+    stroke-width: 2;
+    fill: none;
+    z-index: 100;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
 }

@@ -1,4 +1,11 @@
 $(document).ready(function(){
+
 	console.log("main.js loaded");
-	console.log(rData);
+	data = {}
+	
+	$.getJSON("data/main_data_sample.json", function(json) {
+		data.tweets = json.tweets;
+		data.users = json.users;
+		time.init();
+	});
 });
