@@ -33,16 +33,12 @@ html, body, .container, #map {
 }
 
 path { 
-    stroke: steelblue;
     stroke-width: 2;
     fill: none;
 }
 
-path:hover { 
-    stroke: red;
-    stroke-width: 2;
-    fill: none;
-    z-index: 100;
+.top {
+    stroke-width: 5;
 }
 
 .axis path,
