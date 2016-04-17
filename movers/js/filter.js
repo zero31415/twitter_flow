@@ -28,9 +28,9 @@ filter.update = function() {
 
    filter.currentData = filter.updateData();
 
-
-    map.update(currentData);
-    tim
+   map.update();
+   timeTravel.update();
+   timeLine.update();
 
 }
 
@@ -47,3 +47,5 @@ filter.byLanguage = function() {
     filter.currentData = ;
     filter.update();
 }
+
+filter.byCountry
