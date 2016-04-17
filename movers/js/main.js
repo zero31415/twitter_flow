@@ -7,12 +7,13 @@ $(document).ready(function(){
 		data.tweets = json.tweets;
 		data.users = json.users;
 		filter.init();
-		time.init();
+		timeTravel.init();
 		map.init();
 	});
 
 	$("#slider-user-num").on("change", function(){
 		filter.num_users = this.value;
-		time.init();
+		timeTravel.init();
 	});
+
 });
