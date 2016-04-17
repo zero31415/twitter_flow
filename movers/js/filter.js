@@ -40,7 +40,7 @@ var _makeUserTweetHashMap = function() {
 }
 
 
-/*
+
 // Takes excludedUsers and generates new currentData object
 filter.updateData() = function() {
 }
@@ -85,14 +85,33 @@ filter.byProfLanguage = function() {
   }
 }
 
-//Get all the languages in current data and
-filter.byProfLanguage.getAllLang = function(){
+//Get all the languages in current data
+//the languages are the ones in users.prof_lang
+filter.initLanguages = function(){
     //get all the languages
+    langList = {};
+
+    for(i = 0;i < data.users.length; i++){
+        
+        var userLang = data.users[i].prof_lang;
+
+        if (!langList[userLang]) {
+            langList[userLang] = true;
+        }
+
+    }
+
+    //filter.langList = 
+
+    return langList
 
 }
 
+/*
+neglect this part first
 //Get the 'checked' laguages, find all users that do not have 
 filter.byTweetLanguage = function(){
 
 }
 */
+
