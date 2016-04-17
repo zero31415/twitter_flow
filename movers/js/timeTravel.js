@@ -1,34 +1,42 @@
 $(document).ready(function(){
-	time = {}
+	timeTravel = {}
 
-	time.u_ids = []
-	time.cntrys = []
-	time.trips = []
-	time.cntry_val_map = {}
-	time.timerange = []
+	timeTravel.u_ids = [];
+	timeTravel.cntrys = [];
+	timeTravel.trips = [];
+	timeTravel.cntry_val_map = {};
+	timeTravel.timerange = [];
 
-	time.init = function() {
-		console.log("time.js init");
-		time.data = crossfilter(data.tweets);
-		var timedataByTime = time.data.dimension(function(d) { return d.time; });
-		time.timerange = [timedataByTime.bottom(Infinity)[0].time, timedataByTime.top(Infinity)[0].time];
-		var timedataByUserid = time.data.dimension(function(d) { return d.u_id; });
-		var timedataByCountry = time.data.dimension(function(d) { return d.cntry; });
+	timeTravel.init = function() {
+
+		timeTravel.u_ids = [];
+		timeTravel.cntrys = [];
+		timeTravel.trips = [];
+		timeTravel.cntry_val_map = {};
+		timeTravel.timerange = [];
+		$("#timeTravel-container").html("");
+
+		console.log("timeTravel.js init");
+		timeTravel.data = crossfilter(data.tweets);
+		var timedataByTime = timeTravel.data.dimension(function(d) { return d.time; });
+		timeTravel.timerange = [timedataByTime.bottom(Infinity)[0].time, timedataByTime.top(Infinity)[0].time];
+		var timedataByUserid = timeTravel.data.dimension(function(d) { return d.u_id; });
+		var timedataByCountry = timeTravel.data.dimension(function(d) { return d.cntry; });
 		var timedataGroupsByUserid = timedataByUserid.group(function(u_id) { return u_id; });
 		var arr = timedataGroupsByUserid.all();
 		for (var i = 0; i < arr.length; i++) {
-		    time.u_ids.push(arr[i].key);
+		    timeTravel.u_ids.push(arr[i].key);
 		}
 		var timedataGroupsByCountry = timedataByCountry.group(function(cntry) { return cntry; });
 		var arr = timedataGroupsByCountry.all();
 		for (var i = 0; i < arr.length; i++) {
-		    time.cntrys.push(arr[i].key);
-		    time.cntry_val_map[arr[i].key] = i;
+		    timeTravel.cntrys.push(arr[i].key);
+		    timeTravel.cntry_val_map[arr[i].key] = i;
 		}
 
-		time.u_ids = time.u_ids.slice(0, 10);
+		timeTravel.u_ids = timeTravel.u_ids.slice(0, filter.num_users);
 
-		time.u_ids.forEach(function(u_id) {
+		timeTravel.u_ids.forEach(function(u_id) {
 			timedataByUserid.filter(u_id);
 			var arr = timedataByTime.bottom(Infinity);
 			for (var i = 0; i < arr.length; i++) {
@@ -36,16 +44,16 @@ $(document).ready(function(){
 				item.symbol = u_id;
 				item.date = arr[i].time;
 				item.cntry = arr[i].cntry;
-				item.cntry_val = time.cntry_val_map[item.cntry];
-			    time.trips.push(item);
+				item.cntry_val = timeTravel.cntry_val_map[item.cntry];
+			    timeTravel.trips.push(item);
 			}
 			timedataByUserid.filterAll();	
 		});
 
 		// Set the dimensions of the canvas / graph
 		var margin = {top: 30, right: 20, bottom: 30, left: 50},
-		    width = 1280 - margin.left - margin.right,
-		    height = 1280 - margin.top - margin.bottom;
+		    width = $("#timeTravel-container").width() - margin.left - margin.right,
+		    height = $("#timeTravel-container").height() - margin.top - margin.bottom;
 
 		// Parse the date / time
 		var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse; 
@@ -67,7 +75,7 @@ $(document).ready(function(){
 		    .y(function(d) { return y(d.cntry_val); });
 
 		// Adds the svg canvas
-		var svg = d3.select("#time-container")
+		var svg = d3.select("#timeTravel-container")
 		    .append("svg")
 		        .attr("width", width + margin.left + margin.right)
 		        .attr("height", height + margin.top + margin.bottom)
@@ -75,22 +83,22 @@ $(document).ready(function(){
 		        .attr("transform", 
 		              "translate(" + margin.left + "," + margin.top + ")");
 
-	    data = time.trips;
+	    mData = timeTravel.trips;
 
 	    // q?
-	    data.forEach(function(d) {
+	    mData.forEach(function(d) {
 			d.date = parseDate(d.date);
 			d.cntry_val = +d.cntry_val;
 	    });
 
 	    // Scale the range of the data
-	    x.domain(d3.extent(data, function(d) { return d.date; }));
-	    y.domain([0, d3.max(data, function(d) { return d.cntry_val; })]); 
+	    x.domain(d3.extent(mData, function(d) { return d.date; }));
+	    y.domain([0, d3.max(mData, function(d) { return d.cntry_val; })]); 
 
 	    // Nest the entries by symbol
 	    var dataNest = d3.nest()
 	        .key(function(d) {return d.symbol;})
-	        .entries(data);
+	        .entries(mData);
 
 	    // Loop through each symbol / key
 	    dataNest.forEach(function(d) {
@@ -101,6 +109,7 @@ $(document).ready(function(){
 	            .attr("class", "line")
 	            .attr("d", line(d.values))
 	            .attr("stroke", c)
+	            .attr("opacity", 0.5)
 				.on("mouseover", function(d) {
 					d3.select(this).moveToFront();
 					d3.select(this).classed("top", true);
@@ -131,7 +140,7 @@ $(document).ready(function(){
 	        .call(yAxis);
 
 	    d3.select(".y.axis").selectAll(".tick").selectAll("text")
-	    	.text(function(d) { return time.cntrys[d]; });
+	    	.text(function(d) { return timeTravel.cntrys[d]; });
 
 		d3.selection.prototype.moveToFront = function() {  
 			return this.each(function(){
