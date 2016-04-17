@@ -9,7 +9,7 @@ filter.init = function() {
     filter.languageFilter = [];
     // Generate a hashmap user -> tweets
     console.log('Generating UserTweet Hashmap');
-    filter.tweetsByUser = _makeUserTweetHashMap();
+    // filter.tweetsByUser = _makeUserTweetHashMap();
     filter.num_users = 10;
     console.log('Done');
 
@@ -18,74 +18,74 @@ filter.init = function() {
     //timeTravel.init();    
 }
 
-// Generate a hashmap to find tweets quickly by user id. {'user_id': [tweet,
-// tweet, ...], ...}
-var _makeUserTweetHashMap = function() {
-    var tweetsByUser = {};
+// // Generate a hashmap to find tweets quickly by user id. {'user_id': [tweet,
+// // tweet, ...], ...}
+// var _makeUserTweetHashMap = function() {
+//     var tweetsByUser = {};
 
-    var nTweets = filter.data.tweets.length;
-    var tweets = filter.data.tweets
+//     var nTweets = filter.data.tweets.length;
+//     var tweets = filter.data.tweets
 
-    for(i = 0; i < nTweets; i++) {
-        var tweet = tweets[i]
-        var currentUser = tweetsByUser[tweets[i]['u_id']];
+//     for(i = 0; i < nTweets; i++) {
+//         var tweet = tweets[i]
+//         var currentUser = tweetsByUser[tweets[i]['u_id']];
 
-        if(currentUser){
-            currentUser.push(data.tweet);
-        } else {
-            currentUser = [];
-            currentUser.push(data.tweet);
-        }
-    } 
-    return(tweetsByUser);
-}
+//         if(currentUser){
+//             currentUser.push(data.tweet);
+//         } else {
+//             currentUser = [];
+//             currentUser.push(data.tweet);
+//         }
+//     } 
+//     return(tweetsByUser);
+// }
 
 
-filter.template = function(refilter, negative) {
+// filter.template = function(refilter, negative) {
     
-    var data;
-    if(refilter) {
-        data = filter.currentData;
-    } else {
-        data = filter.data;
-    }
+//     var data;
+//     if(refilter) {
+//         data = filter.currentData;
+//     } else {
+//         data = filter.data;
+//     }
 
 
-    // Filtering operation
-    // and store data.users  
+//     // Filtering operation
+//     // and store data.users  
 
 
-    data.tweets = [];
-    for(i = 0; i < data.users.length; i++){
-        var currentID = data.users['u_id'];
-        data.tweets.concat(filter.tweetsByUser[currentID]
-    }
-    // 
+//     data.tweets = [];
+//     for(i = 0; i < data.users.length; i++){
+//         var currentID = data.users['u_id'];
+//         data.tweets.concat(filter.tweetsByUser[currentID]
+//     }
+//     // 
     
-    filter.currentData = data;
-}
+//     filter.currentData = data;
+// }
 
-filter.tweetsByIser[userID]
+// filter.tweetsByIser[userID]
 
 
-// Takes excludedUsers and generates new currentData object
-filter.updateData() = function() {
+// // Takes excludedUsers and generates new currentData object
+// filter.updateData() = function() {
 
-    var nUsers = filter.data.users.length;
-    var outData = {'users': [], 'tweets': []};
+//     var nUsers = filter.data.users.length;
+//     var outData = {'users': [], 'tweets': []};
 
-    for(i = 0; i < nUsers; i++){
+//     for(i = 0; i < nUsers; i++){
         
-        var currentId = filter.data.users[i]['u_id'];
+//         var currentId = filter.data.users[i]['u_id'];
 
-        if(filter.excludedUsers.indexOf(currentId) > -1){ 
-            continue;
-        } else {
-            filter.currentData.users.push(filter.data.users[i]);
-            filter.currentData.tweets.concat(filter.tweetsByUser[currentId];
-        } 
-    }
-}
+//         if(filter.excludedUsers.indexOf(currentId) > -1){ 
+//             continue;
+//         } else {
+//             filter.currentData.users.push(filter.data.users[i]);
+//             filter.currentData.tweets.concat(filter.tweetsByUser[currentId];
+//         } 
+//     }
+// }
 
 /*
 // Take the excludedUsers generate a new currentData object and update all
