@@ -40,6 +40,33 @@ var _makeUserTweetHashMap = function() {
 }
 
 
+filter.template = function(refilter, negative) {
+    
+    var data;
+    if(refilter) {
+        data = filter.currentData;
+    } else {
+        data = filter.data;
+    }
+
+
+    // Filtering operation
+    // and store data.users  
+
+
+    data.tweets = [];
+    for(i = 0; i < data.users.length; i++){
+        var currentID = data.users['u_id'];
+        data.tweets.concat(filter.tweetsByUser[currentID]
+    }
+    // 
+    
+    filter.currentData = data;
+}
+
+filter.tweetsByIser[userID]
+
+
 // Takes excludedUsers and generates new currentData object
 filter.updateData() = function() {
 
