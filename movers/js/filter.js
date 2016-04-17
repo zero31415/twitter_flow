@@ -1,4 +1,5 @@
-var filter = {};
+filter = {};
+console.log('Filter loaded');
 
 filter.init = function() {
     
@@ -39,13 +40,10 @@ var _makeUserTweetHashMap = function() {
 }
 
 
+/*
 // Takes excludedUsers and generates new currentData object
 filter.updateData() = function() {
-    
-    f
-
 }
-
 
 // Take the excludedUsers generate a new currentData object and update all
 // visualizations
@@ -72,3 +70,4 @@ filter.byLanguage = function() {
     filter.currentData = ;
     filter.update();
 }
+*/
