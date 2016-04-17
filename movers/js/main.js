@@ -7,6 +7,7 @@ $(document).ready(function(){
 		data.tweets = json.tweets;
 		data.users = json.users;
 		filter.init();
+                console.log('All initialized');
 	});
 
 });
