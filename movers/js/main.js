@@ -6,6 +6,7 @@ $(document).ready(function(){
 	$.getJSON("data/main_data_sample.json", function(json) {
 		data.tweets = json.tweets;
 		data.users = json.users;
-		time.init();
+		filter.init();
 	});
+
 });
