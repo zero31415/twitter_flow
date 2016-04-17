@@ -34,7 +34,7 @@ $(document).ready(function(){
 		    timeTravel.cntry_val_map[arr[i].key] = i;
 		}
 
-		timeTravel.u_ids = timeTravel.u_ids.slice(0, filter.num_users);
+		timeTravel.u_ids = timeTravel.u_ids.slice(0, 2);
 
 		timeTravel.u_ids.forEach(function(u_id) {
 			timedataByUserid.filter(u_id);

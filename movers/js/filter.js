@@ -1,13 +1,5 @@
-$(document).ready(function(){
-	filter = {};
-	console.log("filter.js loaded");
-
-	filter.num_users = Number($("#slider-user-num").val());
-	filter.init = function() {
-
-	};
-});
-var filter = {};
+filter = {};
+console.log('Filter loaded');
 
 filter.init = function() {
     
@@ -16,20 +8,43 @@ filter.init = function() {
     filter.currentData = {};
     filter.excludedUsers = [];
     filter.languageFilter = [];
-    
+    // Generate a hashmap user -> tweets
+    console.log('Generating UserTweet Hashmap');
+    filter.tweetsByUser = _makeUserTweetHashMap();
+    filter.user_num = 10;
 
-    map.init();
-    time.init();
-    
+    //map.init();
+    //timeLine.init();
+        //timeTravel.init();    
+}
+
+// Generate a hashmap to find tweets quickly by user id. {'user_id': [tweet,
+// tweet, ...], ...}
+var _makeUserTweetHashMap = function() {
+    var tweetsByUser = {};
+
+    nTweets = filter.data.tweets.length;
+    tweets = filter.data.tweets
+
+    for(i = 0; i < nTweets; i++) {
+
+        var currentUser = tweetsByUser[tweets[i]['u_id']];
+
+        if(currentUser){
+            currentUser.push(data.tweet);
+        } else {
+            currentUser = [];
+            currentUser.push(data.tweet);
+        }
+    } 
+    return(tweetsByUser);
 }
 
 
+/*
 // Takes excludedUsers and generates new currentData object
-filter.updateData = function() {
-
-
+filter.updateData() = function() {
 }
-
 
 // Take the excludedUsers generate a new currentData object and update all
 // visualizations
@@ -53,6 +68,7 @@ filter.byIndividualSelection = function(user_id) {
 // append them to excludedUsers and call update
 filter.byLanguage = function() {
     // Finds all user_ids that don't have language in language list
-    filter.currentData = "";
+    filter.currentData = ;
     filter.update();
 }
+*/

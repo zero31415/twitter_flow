@@ -10,6 +10,7 @@ $(document).ready(function(){
 		timeTravel.init();
 		map.init();
 		init_btns();
+        console.log('All initialized');
 	});
 
 	function init_btns(){

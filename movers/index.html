@@ -5,7 +5,7 @@
         <title>Movers</title>
 
         <!-- Styles -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
         <link href="css/main.css" rel="stylesheet" type="text/css"/>
         <link rel="shortcut icon" type="image/png" href="media/favicon.jpeg"/>
         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
@@ -42,17 +42,12 @@
 				</ul>
 			</div>
 		</nav>
-		<div id="main-container">
-			<div id="filter-container"></div>
-			<div id="timeTravel-container"></div>
-			<div id="map-container"></div>		
-		</div>
         <div id="filter-container">
-    		<form action="#">
-    			<p class="range-field">
-    				<input type="range" id="slider-user-num" value="10" min="0" max="100" />
-    			</p>
-    		</form>
+            <form action="#">
+                <p class="range-field">
+                    <input type="range" id="slider-user-num" value="10" min="0" max="100" />
+                </p>
+            </form>
             <form action="#" class="filter-language">
                 <p>
                     <input type="checkbox" id="filter-language-english" />
@@ -64,5 +59,10 @@
                 </p>
             </form>
         </div>
+		<div id="main-container">
+			<div id="filter-container"></div>
+			<div id="timeTravel-container"></div>
+			<div id="map-container"></div>		
+		</div>
     </body>
 </html>
