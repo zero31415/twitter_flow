@@ -1,3 +1,12 @@
+$(document).ready(function(){
+	filter = {};
+	console.log("filter.js loaded");
+
+	filter.num_users = Number($("#slider-user-num").val());
+	filter.init = function() {
+
+	};
+});
 var filter = {};
 
 filter.init = function() {
@@ -40,9 +49,14 @@ var _makeUserTweetHashMap = function() {
 
 
 // Takes excludedUsers and generates new currentData object
+<<<<<<< HEAD
 filter.updateData() = function() {
     
     f
+=======
+filter.updateData = function() {
+
+>>>>>>> 984a262ce73f18a73d163c6823771dbb65340985
 
 }
 
@@ -69,6 +83,6 @@ filter.byIndividualSelection = function(user_id) {
 // append them to excludedUsers and call update
 filter.byLanguage = function() {
     // Finds all user_ids that don't have language in language list
-    filter.currentData = ;
+    filter.currentData = "";
     filter.update();
 }
