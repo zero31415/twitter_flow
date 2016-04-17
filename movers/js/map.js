@@ -3,6 +3,5 @@ $(document).ready(function(){
 	console.log("map.js loaded");
 
 	map.init = function() {
-
 	};
 });
