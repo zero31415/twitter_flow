@@ -7,6 +7,32 @@ $(document).ready(function(){
 	timeTravel.cntry_val_map = {};
 	timeTravel.timerange = [];
 
+	mCntrys = 
+		["DEU",
+		"ITA",
+		"CHE",
+		"AUT",
+		"CZE",
+		"SVK",
+		"HUN",
+		"ROU",
+		"HRV",
+		"SVN",
+		"BIH",
+		"SRB",
+		"MKD",
+		"BGR",
+		"ALB",
+		"GRC",
+		"TUR",
+		"SYR",
+		"LBN",
+		"JOR",
+		"IRQ",
+		"IRN",
+		"EGY",
+		"Others"];
+
 	timeTravel.init = function() {
 
 		timeTravel.u_ids = [];
@@ -43,8 +69,13 @@ $(document).ready(function(){
 				var item = {}
 				item.symbol = u_id;
 				item.date = arr[i].time;
-				item.cntry = arr[i].cntry;
-				item.cntry_val = timeTravel.cntry_val_map[item.cntry];
+				if (mCntrys.includes(arr[i].cntry)) {
+					item.cntry = arr[i].cntry;
+				} else {
+					item.cntry = "Others"
+				}
+				// item.cntry_val = timeTravel.cntry_val_map[item.cntry];
+				item.cntry_val = mCntrys.indexOf(item.cntry);
 			    timeTravel.trips.push(item);
 			}
 			timedataByUserid.filterAll();	
@@ -67,7 +98,7 @@ $(document).ready(function(){
 		    .orient("bottom").ticks(d3.time.months, 1);
 
 		var yAxis = d3.svg.axis().scale(y)
-		    .orient("left").ticks(120);
+		    .orient("left").ticks(24);
 
 		// Define the line
 		var line = d3.svg.line()
@@ -140,7 +171,7 @@ $(document).ready(function(){
 	        .call(yAxis);
 
 	    d3.select(".y.axis").selectAll(".tick").selectAll("text")
-	    	.text(function(d) { return timeTravel.cntrys[d]; });
+	    	.text(function(d) { return mCntrys[d]; });
 
 		d3.selection.prototype.moveToFront = function() {  
 			return this.each(function(){
