@@ -89,6 +89,19 @@ var _checkLanguage = function(userObj) {
     // Need to get the language abbreviations to implement this
 }
 
+// A different version of _checkLanguage function.
+// Please consider which one to keep
+// Check if current user speaks the language
+// Return true for yes and false for no
+var _checkLanguage2 = function(userObj, lang){
+	var profileLang = userObj.prof_lang;
+	if(profileLang == lang){
+		return true;
+	} else if {
+		return false;
+	}
+}
+
 //Get all the languages in data, so the checkbox can be generated accordingly
 //the languages are the ones in users.prof_lang
 filter.initLanguages = function(){
