@@ -2,20 +2,18 @@ filter = {};
 
 filter.init = function() {
     
+    console.log('Initializing Filter...');
     // Check the control fields
     filter.data = data;
-    filter.currentData = {};
+    filter.currentData = data;
     filter.excludedUsers = [];
     filter.languageFilter = [];
     // Generate a hashmap user -> tweets
-    console.log('Generating UserTweet Hashmap');
-    // filter.tweetsByUser = _makeUserTweetHashMap();
-    filter.num_users = 10;
+    filter.tweetsByUser = _makeUserTweetHashMap();
+ 
+    // Initialize visualizations
+    timeTravel.init();    
     console.log('Done');
-
-    //map.init();
-    //timeLine.init();
-    //timeTravel.init();    
 }
 
 filter.simpleInit = function() {
@@ -66,62 +64,76 @@ filter.template = function(refilter, negative) {
         data = filter.data;
     }
 
-
+    var nUsers = data.users.length
     // Filtering operation
     // and store data.users  
-
     data.tweets = [];
-    for(i = 0; i < data.users.length; i++){
+    for(i = 0; i < nUsers; i++){
         var currentID = data.users['u_id'];
         data.tweets.concat(filter.tweetsByUser[currentID]);
     }
       
+    // Update the global data object
     filter.currentData = data;
+
+    // Update all visualizations
+    filter.update();
+}
+
+// Function to filter out one or more users
+// Arguments:
+// userIds: arr or str, user ids to be filtered
+filter.bySelection = function(userIds, refilter=true, negative=false) {
+   
+    if(typeof userId == 'string') {
+        userIds = [userId];
+    }
+
+    var data;
+    if(refilter) {
+        data = filter.currentData;
+    } else {
+        data = filter.data;
+    }
+     
+    var nUsers = data.users.length
+
+    // Filtering operation
+    for(i = 0; i < nUsers; i++) {
+        var currentId = data.users['u_id'];
+        if(userIds.indexOf(currentId) > -1) {
+            data.users.splice(i, 1); 
+        } else {
+            continue;
+        }
+    }
+
+    // and store data.users  
+    data.tweets = [];
+    for(i = 0; i < nUsers; i++){
+        var currentID = data.users['u_id'];
+        data.tweets.concat(filter.tweetsByUser[currentID]);
+    }
+    
+    // Update the global data object
+    filter.currentData = data;
+
+    // Update all visualizations
+    filter.update();
 }
 
 
-
-
-// // Takes excludedUsers and generates new currentData object
-// filter.updateData() = function() {
-
-//     var nUsers = filter.data.users.length;
-//     var outData = {'users': [], 'tweets': []};
-
-
-//     for(i = 0; i < nUsers; i++){
-        
-//         var currentId = filter.data.users[i]['u_id'];
-
-//         if(filter.excludedUsers.indexOf(currentId) > -1){ 
-//             continue;
-//         } else {
-//             filter.currentData.users.push(filter.data.users[i]);
-//             filter.currentData.tweets.concat(filter.tweetsByUser[currentId];
-//         } 
-//     }
-// }
-
-/*
 // Take the excludedUsers generate a new currentData object and update all
 // visualizations
-filter.update = function() {
-
-   filter.currentData = filter.updateData();
-
-   map.update();
-   timeTravel.update();
-   timeLine.update();
-
+filter.update = function() { 
+    //map.update();
+    //timeTravel.update();
+    //timeLine.update();
+    timeTravel.init();
 }
 
 
-// Take the user id, update the exclusionList and call update()
-filter.byIndividualSelection = function(user_id) {
-   filter.excludedUsers.push(user_id);
-   filter.update()
-}
-
+/*
 // Get the 'checked' languages, find all users that don't speak these languages
 // in their First profile language,
 
