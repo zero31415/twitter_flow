@@ -20,15 +20,12 @@ filter.init = function() {
     console.log('Done');
 }
 
-filter.simpleInit = function() {
-    
-    filter.currentData = data;
+/*
+ * =============================================================================
+ * Helper Funcitons
+ * =============================================================================
+ */
 
-    map.init();
-    timeLine.init();
-    timeTravel.init();
-
-}
 
 // Make the user json
 var _makeUserHash = function() {
@@ -75,7 +72,32 @@ var _makeUserTweetHashMap = function() {
     return(tweetsByUser);
 }
 
+// Take the excludedUsers generate a new currentData object and update all
+// visualizations
+filter.update = function() { 
+    //map.update();
+    //timeTravel.update();
+    //timeLine.update();
+    timeTravel.init();
+}
+
+// Check if current user should be included or excluded depending on language
+// checkbox profile
+var _checkLanguage = function(userObj) {
+    // Retruns true if user should be included and false if not. 
+    // Need to get the language abbreviations to implement this
+}
+
+
+/*
+ * =============================================================================
+ * Filter functions
+ * =============================================================================
+ */
+
+
 // Template for all filters
+//
 // Arguments:
 // ---------
 // refilter: bool, should the filter be applied to currentData or orginal data
@@ -105,10 +127,7 @@ filter.template = function(refilter, negative) {
     }
     //
 
-    // Update data.users given filter.usersActive
-
-
-    // Synchronize updated data.users and data.tweets
+    // Synchronize updated data.users and data.tweets given data.userHash
     data = _synchData(data);
      
     // Update the global data object
@@ -168,14 +187,43 @@ filter.bySelection = function(userIds, refilter=true, negative=true) {
     filter.update();
 }
 
+filter.byLanguage = function(refilter=true) {
 
-// Take the excludedUsers generate a new currentData object and update all
-// visualizations
-filter.update = function() { 
-    //map.update();
-    //timeTravel.update();
-    //timeLine.update();
-    timeTravel.init();
+    if(!refilter && !negative) {
+        throw "You can't use a positive filter on the complete data";
+    }
+ 
+    var data;
+    if(refilter) {
+        data = filter.currentData;
+    } else {
+        data = filter.data;
+    }
+
+    var nUsers = data.users.length
+    // Filtering operation happens here. Use the user json object
+    if(negative) {
+        // Remove users that match the criterion
+        for(var key in data.usersHash) {
+            if(!_checkLanguage(data.usersHash[key])) {
+               delete data.usersHash[key] 
+            } else {
+                continue;
+            }
+        }
+    } else {
+        // Add users from original data (make sure not to generate duplicates)
+    }
+    //
+
+    // Synchronize updated data.users and data.tweets given data.userHash
+    data = _synchData(data);
+     
+    // Update the global data object
+    filter.currentData = data;
+
+    // Update all visualizations
+    filter.update();
 }
 
 

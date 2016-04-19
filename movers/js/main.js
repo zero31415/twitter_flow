@@ -19,11 +19,11 @@ $(document).ready(function(){
 			{
                             // Is now checked
                             filter.checkedLanguages.english = true;
-                            // filter.byLanguage(negative=false);
+                            filter.byLanguage();
 			} else {
                             // Is now unchecked
                             filter.checkedLanguages.english = false;
-                            // filter.byLanguage(negative=true);
+                            filter.byLanguage();
 			}
 		});
 		$("body").on("click", "#filter-language-chinese", function() {
@@ -31,11 +31,11 @@ $(document).ready(function(){
 			{ 
                             // Is now checked
                             filter.checkedLanguages.chinese = true;
-                            // filter.byLanguage(negative=false);
+                            filter.byLanguage();
 			} else {
                             // Is now unchecked
                             filter.checkedLanguages.chinese = false;
-                            // filter.byLanguage(negative=true);
+                            filter.byLanguage();
 			}
 		});
 
