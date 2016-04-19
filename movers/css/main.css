@@ -20,16 +20,14 @@ html, body, .container, #map {
 }
 
 #main-container{
-  margin-top: 50px;
 }
 
 #map-container {
-  height: 100px;
-  background: red;
+  height: 500px;
 }
 
-#time-container {
-  height: 600px;
+#timeTravel-container {
+  height: 500px;
 }
 
 path { 
@@ -47,4 +45,7 @@ path {
     stroke: grey;
     stroke-width: 1;
     shape-rendering: crispEdges;
+}
+.axis {
+  font-size: 8px;
 }
