@@ -89,6 +89,27 @@ var _checkLanguage = function(userObj) {
     // Need to get the language abbreviations to implement this
 }
 
+//Get all the languages in data, so the checkbox can be generated accordingly
+//the languages are the ones in users.prof_lang
+filter.initLanguages = function(){
+    //get all the languages
+    langList = {};
+
+    for(i = 0;i < data.users.length; i++){
+        
+        var userLang = data.users[i].prof_lang;
+
+        if (!langList[userLang]) {
+            langList[userLang] = true;
+        }
+
+    }
+
+    //filter.langList = 
+
+    return langList
+
+}
 
 /*
  * =============================================================================
@@ -251,28 +272,9 @@ filter.byProfLanguage = function() {
         );
   }
 }
+*/
 
-//Get all the languages in current data
-//the languages are the ones in users.prof_lang
-filter.initLanguages = function(){
-    //get all the languages
-    langList = {};
 
-    for(i = 0;i < data.users.length; i++){
-        
-        var userLang = data.users[i].prof_lang;
-
-        if (!langList[userLang]) {
-            langList[userLang] = true;
-        }
-
-    }
-
-    //filter.langList = 
-
-    return langList
-
-}
 
 /*
 neglect this part first
