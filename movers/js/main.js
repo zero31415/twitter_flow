@@ -7,8 +7,8 @@ $(document).ready(function(){
 		data.tweets = json.tweets;
 		data.users = json.users;
 		filter.init();
-		timeTravel.init();
-		map.init();
+		//timeTravel.init();
+		//map.init();
 		init_btns();
         console.log('All initialized');
 	});
