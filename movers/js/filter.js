@@ -6,7 +6,7 @@ filter.init = function() {
     // Set data
     filter.data = data;
     filter.data.userHash = _makeUserHash();
-    filter.currentData = data;
+    filter.currentData = filter.data;
 
     // Generate a hashmap user -> tweets
     filter.tweetsByUser = _makeUserTweetHashMap();
@@ -138,19 +138,29 @@ filter.bySelection = function(userIds, refilter=true, negative=true) {
 
     var nUsers = data.users.length
 
-    // Filtering operation happens here. Operates on data.users
+    // Filtering operation happens here. Operates on data.userHash
     if(negative) {
         // Remove users that match the criterion
+        for(i = 0; i < userIds.lenght; i++) {
+            delete data.userHash[userIds[i]];
+        }
     } else {
         // Add users from original data (make sure not to generate duplicates)
+        for(i = 0; i < userIds.length; i++) {
+            var id_ = userIds[i];
+            if(id_ in data.userHash) {
+                // If user already active, do nothing
+                continue;
+            } else {
+                // If not get user data from original data
+                data.userHash[id_] = filter.data.userHash[id_];
+            }
+        }
     }
 
-    data.tweets = [];
-    for(i = 0; i < nUsers; i++){
-        var currentID = data.users['u_id'];
-        data.tweets.concat(filter.tweetsByUser[currentID]);
-    }
-    
+    // Synchronize updated data.users and data.tweets
+    data = _synchData(data);
+   
     // Update the global data object
     filter.currentData = data;
 
