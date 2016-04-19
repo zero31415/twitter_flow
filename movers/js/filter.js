@@ -187,7 +187,7 @@ filter.bySelection = function(userIds, refilter=true, negative=true) {
     filter.update();
 }
 
-filter.byLanguage = function(refilter=true) {
+filter.byLanguage = function(refilter=true, negative=true) {
 
     if(!refilter && !negative) {
         throw "You can't use a positive filter on the complete data";
