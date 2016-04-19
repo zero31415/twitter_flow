@@ -7,41 +7,37 @@ $(document).ready(function(){
 		data.tweets = json.tweets;
 		data.users = json.users;
 		filter.init();
-		//timeTravel.init();
-		//map.init();
 		init_btns();
         console.log('All initialized');
 	});
 
 	function init_btns(){
 		$("body").on("click", "#filter-language-english", function() {
-			if ($(this).is(":checked")) 
-			{
-                            // Is now checked
-                            filter.checkedLanguages.english = true;
-                            //filter.byLanguage();
+			if ($(this).is(":checked")) {
+	            // Is now checked
+	            filter.checkedLanguages.english = true;
+	            //filter.byLanguage();
 			} else {
-                            // Is now unchecked
-                            filter.checkedLanguages.english = false;
-                            //filter.byLanguage();
+                // Is now unchecked
+                filter.checkedLanguages.english = false;
+                //filter.byLanguage();
 			}
 		});
 		$("body").on("click", "#filter-language-chinese", function() {
-			if ($(this).is(":checked")) 
-			{ 
-                            // Is now checked
-                            filter.checkedLanguages.chinese = true;
-                            //filter.byLanguage();
+			if ($(this).is(":checked")) { 
+                // Is now checked
+                filter.checkedLanguages.chinese = true;
+                //filter.byLanguage();
 			} else {
-                            // Is now unchecked
-                            filter.checkedLanguages.chinese = false;
-                            //filter.byLanguage();
+                // Is now unchecked
+                filter.checkedLanguages.chinese = false;
+                //filter.byLanguage();
 			}
 		});
 
 		$("#slider-user-num").on("change", function(){
 			filter.num_users = this.value;
-			timeTravel.init();
+			timeTravel.update();
 		});
 	};
 
@@ -53,5 +49,13 @@ $(document).ready(function(){
 	        color += letters[Math.floor(Math.random() * 16)];
 	    }
 	    return color;
+	}
+	toColor = function (num) {
+	    num >>>= 0;
+	    var b = num & 0xFF,
+	        g = (num & 0xFF00) >>> 8,
+	        r = (num & 0xFF0000) >>> 16,
+	        a = 1 ;
+	    return "rgba(" + [r, g, b, a].join(",") + ")";
 	}
 });
