@@ -18,53 +18,68 @@ filter.init = function() {
     //timeTravel.init();    
 }
 
+filter.simpleInit = function() {
+    
+    filter.currentData = data;
+
+    map.init();
+    timeLine.init();
+    timeTravel.init();
+
+}
+
+
+
 // // Generate a hashmap to find tweets quickly by user id. {'user_id': [tweet,
 // // tweet, ...], ...}
-// var _makeUserTweetHashMap = function() {
-//     var tweetsByUser = {};
+var _makeUserTweetHashMap = function() {
+    var tweetsByUser = {};
 
-//     var nTweets = filter.data.tweets.length;
-//     var tweets = filter.data.tweets
+    var nTweets = filter.data.tweets.length;
+    var tweets = filter.data.tweets
 
-//     for(i = 0; i < nTweets; i++) {
-//         var tweet = tweets[i]
-//         var currentUser = tweetsByUser[tweets[i]['u_id']];
+    for(i = 0; i < nTweets; i++) {
+        var tweet = tweets[i]
+        var currentUser = tweetsByUser[tweets[i]['u_id']];
 
-//         if(currentUser){
-//             currentUser.push(data.tweet);
-//         } else {
-//             currentUser = [];
-//             currentUser.push(data.tweet);
-//         }
-//     } 
-//     return(tweetsByUser);
-// }
+        if(currentUser){
+            currentUser.push(data.tweet);
+        } else {
+            currentUser = [];
+            currentUser.push(data.tweet);
+        }
+    } 
+    return(tweetsByUser);
+}
+
+// Template for all filters
+// Arguments:
+// ---------
+// refilter: bool, should the filter be applied to currentData or orginal data
+// negative: bool, is the filter positive or negative
+filter.template = function(refilter, negative) {
+ 
+    var data;
+    if(refilter) {
+        data = filter.currentData;
+    } else {
+        data = filter.data;
+    }
 
 
-// filter.template = function(refilter, negative) {
-    
-//     var data;
-//     if(refilter) {
-//         data = filter.currentData;
-//     } else {
-//         data = filter.data;
-//     }
+    // Filtering operation
+    // and store data.users  
+
+    data.tweets = [];
+    for(i = 0; i < data.users.length; i++){
+        var currentID = data.users['u_id'];
+        data.tweets.concat(filter.tweetsByUser[currentID]);
+    }
+      
+    filter.currentData = data;
+}
 
 
-
-//     // Filtering operation
-//     // and store data.users  
-
-
-//     data.tweets = [];
-//     for(i = 0; i < data.users.length; i++){
-//         var currentID = data.users['u_id'];
-//         data.tweets.concat(filter.tweetsByUser[currentID]
-//     }
-//     // 
-    
-//     filter.currentData = data;
-// }
 
 
 // // Takes excludedUsers and generates new currentData object
