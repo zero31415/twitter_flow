@@ -3,14 +3,18 @@ filter = {};
 filter.init = function() {
     
     console.log('Initializing Filter...');
-    // Check the control fields
+    // Set data
     filter.data = data;
+    filter.data.userHash = _makeUserHash();
     filter.currentData = data;
-    filter.excludedUsers = [];
-    filter.languageFilter = [];
+
     // Generate a hashmap user -> tweets
     filter.tweetsByUser = _makeUserTweetHashMap();
- 
+
+    // Set status of filter controls
+    filter.checkedLanguages = {'english': true,
+                               'chinese': true}; 
+
     // Initialize visualizations
     timeTravel.init();    
     console.log('Done');
@@ -26,10 +30,31 @@ filter.simpleInit = function() {
 
 }
 
+// Make the user json
+var _makeUserHash = function() {
+    var nUsers = filter.data.users.length;
+    out = {};
+    for(i = 0; i < nUsers; i ++) {
+        var currentId = filter.data.users[i]['u_id'];
+        out[currentId] = filter.data.users[i];
+    }
+    return(out);
+}
+
+// Synchronize the user and tweet array give the user json
+var _synchData = function(data) {
+    var users = data.userHash;
+    data.users = [];
+    for(var key in users) {
+        data.users.push(users[key]);
+        data.tweets.push(filter.tweetsByUser[key]);
+    }
+    return(data);
+}
 
 
-// // Generate a hashmap to find tweets quickly by user id. {'user_id': [tweet,
-// // tweet, ...], ...}
+// Generate a hashmap to find tweets quickly by user id. {'user_id': [tweet,
+// tweet, ...], ...}
 var _makeUserTweetHashMap = function() {
     var tweetsByUser = {};
 
@@ -54,8 +79,14 @@ var _makeUserTweetHashMap = function() {
 // Arguments:
 // ---------
 // refilter: bool, should the filter be applied to currentData or orginal data
-// negative: bool, is the filter positive or negative
+// negative: bool, if filter is negative, things matching the criterion are
+//    removed. If positive things matching the criterion are added from original
+//    data.
 filter.template = function(refilter, negative) {
+
+    if(!refilter && !negative) {
+        throw "You can't use a positive filter on the complete data";
+    }
  
     var data;
     if(refilter) {
@@ -65,14 +96,21 @@ filter.template = function(refilter, negative) {
     }
 
     var nUsers = data.users.length
-    // Filtering operation
-    // and store data.users  
-    data.tweets = [];
-    for(i = 0; i < nUsers; i++){
-        var currentID = data.users['u_id'];
-        data.tweets.concat(filter.tweetsByUser[currentID]);
+    // Filtering operation happens here. Use the user json object
+    if(negative) {
+        // Remove users that match the criterion
+        //
+    } else {
+        // Add users from original data (make sure not to generate duplicates)
     }
-      
+    //
+
+    // Update data.users given filter.usersActive
+
+
+    // Synchronize updated data.users and data.tweets
+    data = _synchData(data);
+     
     // Update the global data object
     filter.currentData = data;
 
@@ -80,10 +118,11 @@ filter.template = function(refilter, negative) {
     filter.update();
 }
 
+
 // Function to filter out one or more users
 // Arguments:
 // userIds: arr or str, user ids to be filtered
-filter.bySelection = function(userIds, refilter=true, negative=false) {
+filter.bySelection = function(userIds, refilter=true, negative=true) {
    
     if(typeof userId == 'string') {
         userIds = [userId];
@@ -96,19 +135,16 @@ filter.bySelection = function(userIds, refilter=true, negative=false) {
         data = filter.data;
     }
      
+
     var nUsers = data.users.length
 
-    // Filtering operation
-    for(i = 0; i < nUsers; i++) {
-        var currentId = data.users['u_id'];
-        if(userIds.indexOf(currentId) > -1) {
-            data.users.splice(i, 1); 
-        } else {
-            continue;
-        }
+    // Filtering operation happens here. Operates on data.users
+    if(negative) {
+        // Remove users that match the criterion
+    } else {
+        // Add users from original data (make sure not to generate duplicates)
     }
 
-    // and store data.users  
     data.tweets = [];
     for(i = 0; i < nUsers; i++){
         var currentID = data.users['u_id'];
