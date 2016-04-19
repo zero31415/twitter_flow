@@ -119,7 +119,7 @@ var _getDisLatLon = function(lat1,lon1,lat2,lon2){
 	function deg2rad(deg) {
   		return deg * (Math.PI/180)
 	}
-	
+
 	var R = 6371; // Radius of the earth in km
   	var dLat = deg2rad(lat2-lat1);  // deg2rad below
   	var dLon = deg2rad(lon2-lon1); 
@@ -201,7 +201,7 @@ filter.bySelection = function(userIds, refilter=true, negative=true) {
     // Filtering operation happens here. Operates on data.userHash
     if(negative) {
         // Remove users that match the criterion
-        for(i = 0; i < userIds.lenght; i++) {
+        for(i = 0; i < userIds.length; i++) {
             delete data.userHash[userIds[i]];
         }
     } else {
