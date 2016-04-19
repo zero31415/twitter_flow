@@ -17,17 +17,25 @@ $(document).ready(function(){
 		$("body").on("click", "#filter-language-english", function() {
 			if ($(this).is(":checked")) 
 			{
-				console.log("english checked");
+                            // Is now checked
+                            filter.checkedLanguages.english = true;
+                            // filter.byLanguage(negative=false);
 			} else {
-				console.log("english unchecked");
+                            // Is now unchecked
+                            filter.checkedLanguages.english = false;
+                            // filter.byLanguage(negative=true);
 			}
 		});
 		$("body").on("click", "#filter-language-chinese", function() {
-			if ($('#filter-language-chinese').is(":checked")) 
-			{
-				console.log("chinese checked");
+			if ($(this).is(":checked")) 
+			{ 
+                            // Is now checked
+                            filter.checkedLanguages.chinese = true;
+                            // filter.byLanguage(negative=false);
 			} else {
-				console.log("chinese unchecked");
+                            // Is now unchecked
+                            filter.checkedLanguages.chinese = false;
+                            // filter.byLanguage(negative=true);
 			}
 		});
 
