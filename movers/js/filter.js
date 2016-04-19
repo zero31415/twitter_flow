@@ -120,7 +120,7 @@ filter.initLanguages = function(){
 
     //filter.langList = 
 
-    return langList
+    return langList;
 
 }
 
@@ -143,6 +143,46 @@ var _getDisLatLon = function(lat1,lon1,lat2,lon2){
   	var d = R * c; // Distance in km
   	return d;
 }
+
+//Caculate a speed list for the user
+//In the list, each value is a speed calculated for one segment of the trip
+//The speed are calculated according to location and time of concecutive tweets
+//So the results are the lower bounds
+//Speed are km/hour
+//The tweets are asssumed to be stored in time order
+// Arguments:
+// ---------
+// userId: u_id of users and tweets
+var _speedList = function(userId){
+	var speedList = [];
+	var lat1 = -1.0, lon1 = -1.0, lat2 = -1.0, lon2 = -1.0;
+	var timestamp1, timestamp2;
+	for (tweet in filter.tweetsByUser[userId]){
+		if (lat1 == -1.0){
+			lat1 = tweet.coord[1];
+			lon1 = tweet.coord[0];
+			timestamp1 = tweet.time;
+		} else {
+			lat2 = tweet.coord[1];
+			lon2 = tweet.coord[0];
+			timestamp2 = tweet.time;
+			var distanceKm = _getDisLatLon(lat1,lon1,lat2,lon2);
+			var timeHour = (timestamp2.getTime() - timestamp1.getTime())/1000/3600;
+			var speedKmPerHour = distanceKm/timeHour;
+			speedlist.push(speed);
+
+			lat1 = lat2;
+			lon1 = lon2;
+			timestamp1 = timestamp2;
+		}
+	}
+
+	return speedList;
+
+}
+
+
+
 /*
  * =============================================================================
  * Filter functions
